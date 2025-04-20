@@ -14,6 +14,7 @@ import Pagination from "@/components/Pagination";
 import BookReceipt from "@/components/BookReceipt";
 
 import Menu from "@/components/admin/Menu";
+import BorrowStatusMenu from "@/components/admin/BorrowStatusMenu"; // Import the new component
 import { borrowStatuses } from "@/constants";
 import { getBorrowRecords } from "@/lib/admin/actions/book";
 
@@ -45,7 +46,7 @@ const Page = async ({ searchParams }: PageProps) => {
           </TableHeader>
 
           <TableBody>
-            {allRecords!?.length > 0 ? (
+            {allRecords?.length > 0 ? (
               allRecords!.map((record) => (
                 <TableRow
                   key={record.borrow.id}
@@ -86,10 +87,10 @@ const Page = async ({ searchParams }: PageProps) => {
                     {dayjs(record.borrow.dueDate).format("MMM DD, YYYY")}
                   </TableCell>
                   <TableCell>
-                    <Menu
-                      label="Change Status"
-                      initialValue={record.borrow.status!.toLowerCase()}
-                      items={borrowStatuses}
+                    {/* Replace Menu with BorrowStatusMenu */}
+                    <BorrowStatusMenu
+                      borrowId={record.borrow.id}
+                      initialStatus={record.borrow.status!.toLowerCase() as any} // Cast if necessary based on type definitions
                     />
                   </TableCell>
                   <TableCell>
@@ -102,7 +103,7 @@ const Page = async ({ searchParams }: PageProps) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center pt-10">
+                <TableCell colSpan={6} className="pt-10 text-center">
                   No records found
                 </TableCell>
               </TableRow>

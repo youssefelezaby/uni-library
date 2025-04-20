@@ -12,10 +12,18 @@ import {
 } from "drizzle-orm";
 
 import { db } from "@/database/drizzle";
-import { books, borrowRecords, users } from "@/database/schema";
+import {
+  books,
+  borrowRecords,
+  users,
+  BORROW_STATUS_ENUM,
+} from "@/database/schema";
 import { revalidatePath } from "next/cache"; // Import revalidatePath
 import { redirect } from "next/navigation";
+import dayjs from "dayjs"; // Ensure dayjs is imported
 const ITEMS_PER_PAGE = 20;
+
+type BorrowStatus = (typeof BORROW_STATUS_ENUM.enumValues)[number];
 
 export async function createBook(params: BookParams) {
   try {
@@ -263,4 +271,46 @@ export async function deleteBookAction(bookId: string) {
 
   // Redirect to the books list page after successful deletion
   redirect("/admin/books");
+}
+
+export async function updateBorrowStatus(
+  borrowId: string,
+  newStatus: BorrowStatus
+) {
+  try {
+    // Prepare the update object
+    const updateData: { status: BorrowStatus; returnDate?: Date | null } = {
+      status: newStatus,
+    };
+
+    // Check if the new status is 'RETURNED'
+    if (newStatus === "RETURNED") {
+      // Set the returnDate to the current date
+      updateData.returnDate = dayjs().toDate();
+    } else {
+      // If changing to a status other than RETURNED, set returnDate to null
+      updateData.returnDate = null;
+    }
+
+    const updatedRecord = await db
+      .update(borrowRecords)
+      .set(updateData) // Use the updateData object with conditional returnDate
+      .where(eq(borrowRecords.id, borrowId))
+      .returning();
+
+    if (updatedRecord.length === 0) {
+      return { success: false, error: "Borrow record not found." };
+    }
+
+    // Revalidate the borrow records page to show the updated status
+    revalidatePath("/admin/borrow-records");
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(updatedRecord[0])),
+    };
+  } catch (error) {
+    console.error("Error updating borrow status:", error);
+    return { success: false, error: "Failed to update borrow status." };
+  }
 }

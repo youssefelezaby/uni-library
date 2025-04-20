@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,26 +21,24 @@ interface Props {
   label: string;
   initialValue: string;
   items: MenuItem[];
+  onValueChange: (newValue: string) => void;
 }
 
-const Menu = ({ label, initialValue, items }: Props) => {
-  const [activeItem, setActiveItem] = useState(initialValue);
-
+const Menu = ({ label, initialValue, items, onValueChange }: Props) => {
   const handleItemClick = (value: string) => {
-    setActiveItem(value);
-    console.log(`Clicked: ${value}`);
+    onValueChange(value);
   };
 
   const getItemStyle = (item: MenuItem) => {
     return cn(
-      "capitalize w-fit text-center text-sm font-medium px-5 py-1 rounded-full",
+      "capitalize w-fit text-center text-sm font-medium px-5 py-1 rounded-full cursor-pointer",
       item.bgColor,
       item.textColor
     );
   };
 
   const activeMenuItem =
-    items.find((item) => item.value === activeItem) || items[0];
+    items.find((item) => item.value === initialValue) || items[0];
 
   return (
     <DropdownMenu>
@@ -60,7 +56,10 @@ const Menu = ({ label, initialValue, items }: Props) => {
         {items.map((item) => (
           <DropdownMenuItem
             key={item.value}
-            onClick={() => handleItemClick(item.value)}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleItemClick(item.value);
+            }}
           >
             <p className={cn(getItemStyle(item))}>{item.label}</p>
           </DropdownMenuItem>

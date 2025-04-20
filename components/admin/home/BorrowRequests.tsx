@@ -17,9 +17,9 @@ const BorrowRequests = async () => {
   }
 
   return (
-    <section className="bg-white p-4 rounded-xl">
+    <section className="rounded-xl bg-white p-4">
       <div className="flex justify-between">
-        <h3 className="font-semibold text-dark-400  text-xl">
+        <h3 className="text-xl font-semibold  text-dark-400">
           Borrow Requests
         </h3>
 

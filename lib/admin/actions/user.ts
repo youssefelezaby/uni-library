@@ -95,3 +95,65 @@ export async function updateAccountStatus(params: UpdateAccountStatusParams) {
     };
   }
 }
+
+// Action to update user role
+export async function updateUserRole(userId: string, newRole: Role) {
+  try {
+    const updatedUser = await db
+      .update(users)
+      .set({ role: newRole })
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (updatedUser.length === 0) {
+      return { success: false, error: "User not found." };
+    }
+
+    revalidatePath("/admin/users"); // Revalidate the users page
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(updatedUser[0])), // Ensure data is serializable
+    };
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    return { success: false, error: "Failed to update user role." };
+  }
+}
+
+// Action to delete a user
+export async function deleteUserAction(userId: string) {
+  try {
+    // Optional: Check if the user exists first
+    const existingUser = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (existingUser.length === 0) {
+      return { success: false, error: "User not found." };
+    }
+
+    // Attempt to delete the user
+    await db.delete(users).where(eq(users.id, userId));
+
+    revalidatePath("/admin/users"); // Revalidate the users page
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    // Check for specific database errors, e.g., foreign key constraint violation
+    if (
+      error instanceof Error &&
+      error.message.includes("violates foreign key constraint")
+    ) {
+      return {
+        success: false,
+        error:
+          "Cannot delete user. User may have active borrow records or other dependencies.",
+      };
+    }
+    return { success: false, error: "Failed to delete user." };
+  }
+}

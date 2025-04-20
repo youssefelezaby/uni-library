@@ -1,7 +1,3 @@
-import dayjs from "dayjs";
-import Link from "next/link";
-import Image from "next/image";
-
 import {
   Table,
   TableBody,
@@ -11,11 +7,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import config from "@/lib/config";
+// Removed unused imports: dayjs, Link, Image, Menu, userRoles, config
+
 import Pagination from "@/components/Pagination";
 import { getUsers } from "@/lib/admin/actions/user";
-import Menu from "@/components/admin/Menu";
-import { userRoles } from "@/constants";
+import UserTableRow from "@/components/admin/users/UserTableRow"; // Import the new component
 
 const Page = async ({ searchParams }: PageProps) => {
   const { query, sort, page } = await searchParams;
@@ -45,63 +41,18 @@ const Page = async ({ searchParams }: PageProps) => {
           </TableHeader>
 
           <TableBody>
-            {allRecords!?.length > 0 ? (
+            {allRecords?.length > 0 ? (
               allRecords!.map(({ user, totalBorrowedBooks }) => (
-                <TableRow
+                // Use the new UserTableRow component
+                <UserTableRow
                   key={user.id}
-                  className="border-b-dark-100/5 text-sm font-medium"
-                >
-                  <TableCell className="text-dark-200">
-                    {user.fullname}
-                  </TableCell>
-                  <TableCell className="text-dark-200">
-                    {dayjs(user.createdAt).format("MMM DD, YYYY")}
-                  </TableCell>
-                  <TableCell>
-                    <Menu
-                      label="Change Role"
-                      initialValue={user.role!.toLowerCase()}
-                      items={userRoles}
-                    />
-                  </TableCell>
-
-                  <TableCell className="text-dark-200">
-                    {user.universityId}
-                  </TableCell>
-                  <TableCell className="text-blue-100">
-                    <div className="flex items-center gap-1.5">
-                      <Link
-                        href={`${config.env.imagekit.urlEndpoint}${user.universityCard}`}
-                        target="_blank"
-                      >
-                        View ID Card
-                      </Link>
-                      <Image
-                        src="/icons/admin/link.svg"
-                        width={14}
-                        height={14}
-                        className="object-contain"
-                        alt="delete"
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-dark-200 w-24">
-                    {totalBorrowedBooks}
-                  </TableCell>
-                  <TableCell className="flex justify-center">
-                    <Image
-                      src="/icons/admin/trash.svg"
-                      width={20}
-                      height={20}
-                      className="object-contain"
-                      alt="delete"
-                    />
-                  </TableCell>
-                </TableRow>
+                  user={user}
+                  totalBorrowedBooks={totalBorrowedBooks}
+                />
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center pt-10">
+                <TableCell colSpan={7} className="pt-10 text-center">
                   No records found
                 </TableCell>
               </TableRow>

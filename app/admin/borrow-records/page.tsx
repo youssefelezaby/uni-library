@@ -13,9 +13,7 @@ import BookCover from "@/components/BookCover";
 import Pagination from "@/components/Pagination";
 import BookReceipt from "@/components/BookReceipt";
 
-import Menu from "@/components/admin/Menu";
 import BorrowStatusMenu from "@/components/admin/BorrowStatusMenu"; // Import the new component
-import { borrowStatuses } from "@/constants";
 import { getBorrowRecords } from "@/lib/admin/actions/book";
 
 const Page = async ({ searchParams }: PageProps) => {

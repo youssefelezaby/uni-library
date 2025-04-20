@@ -69,7 +69,7 @@ const Page = async () => {
             <div className="mt-10">
               <p className="text-lg text-light-100">University</p>
               <p className="text-2xl font-semibold text-white">
-                JS Mastery Pro
+                Life University
               </p>
             </div>
 

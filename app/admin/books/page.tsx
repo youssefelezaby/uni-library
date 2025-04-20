@@ -89,20 +89,16 @@ const Page = async ({ searchParams }: PageProps) => {
 
                       <form
                         action={async () => {
-                          "use server"; // If using Server Actions
-                          // Add confirmation logic here if needed
-                          // const confirmed = confirm("Are you sure?");
-                          // if (confirmed) {
+                          "use server";
                           await deleteBookAction(book.id);
-                          // }
                         }}
                       >
-                        <button type="submit" className="cursor-pointer">
+                        <button type="submit" className="group cursor-pointer">
                           <Image
                             src="/icons/admin/trash.svg"
                             width={20}
                             height={20}
-                            className="object-contain"
+                            className="object-contain opacity-50 transition-opacity group-hover:opacity-100"
                             alt="delete"
                           />
                         </button>
